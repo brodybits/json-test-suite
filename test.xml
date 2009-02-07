@@ -1,0 +1,72 @@
+<project name="json-simple" default="main" basedir=".">	
+	<path id="runtime.path">
+		<fileset dir="lib">
+			<include name="*.jar"/>
+		</fileset>
+		<pathelement location="build"/>
+	</path>
+	
+	<path id="compile.path">
+			<fileset dir="lib">
+				<include name="*.jar"/>
+			</fileset>
+	</path>
+	
+	<target name="main" depends="junit">
+	</target>
+	
+	<target name="clean">
+		<delete includeemptydirs="true">
+		    <fileset dir="build" includes="**/*"/>
+			<fileset dir="." includes="TEST-*.txt, sample.json"/>
+		 </delete>
+	</target>
+	
+	<target name="mkdir">
+        <mkdir dir="build"/>
+	</target>
+	
+	<target name="compile" depends="mkdir">
+		<javac 	srcdir="src_compliance" 
+				destdir="build"
+				includes="**/*.java"
+				encoding="UTF-8">
+			<classpath refid="compile.path"/>
+		</javac>
+		<javac 	srcdir="src_perf" 
+						destdir="build"
+						includes="**/*.java"
+						encoding="UTF-8">
+					<classpath refid="compile.path"/>
+				</javac>
+	</target>
+	
+	<target name="encoder_compliance" depends="compile">
+		<junit>
+			<classpath refid="runtime.path"/>
+			<formatter type="plain"/>
+			<test name="org.json.simple.compliance.EncoderTest"/>
+		</junit>
+	</target>
+
+	<target name="decoder_compliance" depends="compile">
+		<junit>
+			<classpath refid="runtime.path"/>
+			<formatter type="plain"/>
+			<test name="org.json.simple.compliance.DecoderTest"/>
+		</junit>
+	</target>
+
+	<target name="compliance" depends="encoder_compliance, decoder_compliance"/>
+	
+	<target name="perf" depends="compile">
+		<junit>
+			<classpath refid="runtime.path"/>
+			<formatter type="plain"/>
+			<test name="org.json.test.perf.SimpleTest"/>
+		</junit>
+	</target>
+	
+	<target name="junit" depends="compliance, perf"/>
+	
+</project>
